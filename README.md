@@ -1,6 +1,7 @@
 ## Todos using React Redux
 
 Technical Details
+
 Conceptually, all of the business logic contained in your event handler functions will now become action creator functions. One exception to be careful of is the handleCreate event handler; there is an if statement that checks whether the key pressed was an Enter key or not. That logic should stay in your handleCreate event handle because it is logic directly related to handling the DOM event. However, all the other code is business logic that can be moved to an action creator function that could be called addTodo.
 
 Every action creator will have an associated action type constant. For example, the addTodo action creator will return an action object whose type property will be ADD_TODO.
