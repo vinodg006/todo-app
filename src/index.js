@@ -1,18 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 import "./index.css";
 import App from "./App";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import reducer from "./reducer";
 import * as serviceWorker from "./serviceWorker";
+
+const store = createStore(reducer);
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <Switch>
-        <Route path="/" component={App} />
-        <Route path="/active" component={App} />
-        <Route path="/completed" component={App} />
-      </Switch>
+      <Provider store={store}>
+        <Switch>
+          <Route path="/" component={App} />
+          <Route path="/active" component={App} />
+          <Route path="/completed" component={App} />
+        </Switch>
+      </Provider>
     </Router>
   </React.StrictMode>,
   document.getElementById("root")

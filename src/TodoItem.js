@@ -1,12 +1,14 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { toggleTodo, deleteTodo } from "./actions";
 
 class TodoItem extends Component {
   handleCheckBox = () => {
-    this.props.toggleCheckBox(this.props.itemId);
+    this.props.dispatchToggleTodo(this.props.itemId);
   };
 
   deleteItem = () => {
-    this.props.handleDelete(this.props.itemId);
+    this.props.dispatchDeleteTodo(this.props.itemId);
   };
 
   render() {
@@ -27,4 +29,9 @@ class TodoItem extends Component {
   }
 }
 
-export default TodoItem;
+const mapDispatchToProps = (dispatch) => ({
+  dispatchToggleTodo: (id) => dispatch(toggleTodo(id)),
+  dispatchDeleteTodo: (id) => dispatch(deleteTodo(id)),
+});
+
+export default connect(null, mapDispatchToProps)(TodoItem);

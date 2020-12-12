@@ -1,12 +1,11 @@
 import React, { Component } from "react";
-import todosList from "./todos.json";
-import TodoList from "./TodoList";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import TodoList from "./TodoList";
+import { addTodo, clearCompletedTodos } from "./actions";
 
-var itemCounter = 6;
 class App extends Component {
   state = {
-    todos: todosList,
     inputValue: "",
   };
 
@@ -18,55 +17,21 @@ class App extends Component {
 
   handleInputKeyUp = (e) => {
     if (e.keyCode === 13 && this.state.inputValue !== "") {
-      const newItem = {
-        id: itemCounter++,
-        title: this.state.inputValue,
-        completed: false,
-      };
-      this.setState({ todos: [...this.state.todos, newItem], inputValue: "" });
+      this.props.dispatchAddTodo(this.state.inputValue);
+      this.setState({ inputValue: "" });
     }
-  };
-
-  toggleCheckBox = (id) => {
-    const updatedTodo = this.state.todos.map((item) => {
-      if (item.id === id) {
-        item.completed = !item.completed;
-      }
-      return item;
-    });
-    this.setState({ todos: updatedTodo });
-  };
-
-  handleDelete = (id) => {
-    this.setState({
-      todos: [
-        ...this.state.todos.filter((todo) => {
-          return todo.id !== id;
-        }),
-      ],
-    });
-  };
-
-  clearCompleted = () => {
-    this.setState({
-      todos: [
-        ...this.state.todos.filter((todo) => {
-          return !todo.completed;
-        }),
-      ],
-    });
   };
 
   filteredTodos = (path) => {
     switch (path) {
       case "/":
-        return this.state.todos;
+        return this.props.todos;
       case "/active":
-        return this.state.todos.filter((todo) => !todo.completed);
+        return this.props.todos.filter((todo) => !todo.completed);
       case "/completed":
-        return this.state.todos.filter((todo) => todo.completed);
+        return this.props.todos.filter((todo) => todo.completed);
       default:
-        return this.state.todos;
+        return this.props.todos;
     }
   };
 
@@ -89,11 +54,7 @@ class App extends Component {
             onKeyUp={this.handleInputKeyUp}
           />
         </header>
-        <TodoList
-          todos={todos}
-          toggleCheckBox={this.toggleCheckBox}
-          handleDelete={this.handleDelete}
-        />
+        <TodoList todos={todos} />
         <footer className="footer">
           <span className="todo-count">
             <strong>{itemsLeft}</strong> item(s) left
@@ -121,7 +82,10 @@ class App extends Component {
               </Link>
             </li>
           </ul>
-          <button className="clear-completed" onClick={this.clearCompleted}>
+          <button
+            className="clear-completed"
+            onClick={this.props.dispatchClearCompletedTodos}
+          >
             Clear completed
           </button>
         </footer>
@@ -130,4 +94,13 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  todos: state,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchAddTodo: (item) => dispatch(addTodo(item)),
+  dispatchClearCompletedTodos: () => dispatch(clearCompletedTodos()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

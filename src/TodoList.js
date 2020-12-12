@@ -12,8 +12,6 @@ class TodoList extends Component {
               completed={todo.completed}
               key={index}
               itemId={todo.id}
-              toggleCheckBox={this.props.toggleCheckBox}
-              handleDelete={this.props.handleDelete}
             />
           ))}
         </ul>
