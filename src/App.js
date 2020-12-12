@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import todosList from "./todos.json";
+import TodoList from "./TodoList";
+import { Link } from "react-router-dom";
 
 var itemCounter = 6;
 class App extends Component {
@@ -55,7 +57,24 @@ class App extends Component {
     });
   };
 
+  filteredTodos = (path) => {
+    switch (path) {
+      case "/":
+        return this.state.todos;
+      case "/active":
+        return this.state.todos.filter((todo) => !todo.completed);
+      case "/completed":
+        return this.state.todos.filter((todo) => todo.completed);
+      default:
+        return this.state.todos;
+    }
+  };
+
   render() {
+    const currentPath = this.props.location.pathname;
+    const todos = this.filteredTodos(currentPath);
+    const itemsLeft = this.filteredTodos("/active").length;
+
     return (
       <section className="todoapp">
         <header className="header">
@@ -71,66 +90,41 @@ class App extends Component {
           />
         </header>
         <TodoList
-          todos={this.state.todos}
+          todos={todos}
           toggleCheckBox={this.toggleCheckBox}
           handleDelete={this.handleDelete}
         />
         <footer className="footer">
           <span className="todo-count">
-            <strong>{this.state.todos.length}</strong> item(s) left
+            <strong>{itemsLeft}</strong> item(s) left
           </span>
+          <ul className="filters">
+            <li>
+              <Link to="/" className={currentPath === "/" ? "selected" : ""}>
+                All
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/active"
+                className={currentPath === "/active" ? "selected" : ""}
+              >
+                Active
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/completed"
+                className={currentPath === "/completed" ? "selected" : ""}
+              >
+                Completed
+              </Link>
+            </li>
+          </ul>
           <button className="clear-completed" onClick={this.clearCompleted}>
             Clear completed
           </button>
         </footer>
-      </section>
-    );
-  }
-}
-
-class TodoItem extends Component {
-  handleCheckBox = () => {
-    this.props.toggleCheckBox(this.props.itemId);
-  };
-
-  deleteItem = () => {
-    this.props.handleDelete(this.props.itemId);
-  };
-
-  render() {
-    return (
-      <li className={this.props.completed ? "completed" : ""}>
-        <div className="view">
-          <input
-            className="toggle"
-            type="checkbox"
-            checked={this.props.completed}
-            onChange={this.handleCheckBox}
-          />
-          <label>{this.props.title}</label>
-          <button className="destroy" onClick={this.deleteItem} />
-        </div>
-      </li>
-    );
-  }
-}
-
-class TodoList extends Component {
-  render() {
-    return (
-      <section className="main">
-        <ul className="todo-list">
-          {this.props.todos.map((todo, index) => (
-            <TodoItem
-              title={todo.title}
-              completed={todo.completed}
-              key={index}
-              itemId={todo.id}
-              toggleCheckBox={this.props.toggleCheckBox}
-              handleDelete={this.props.handleDelete}
-            />
-          ))}
-        </ul>
       </section>
     );
   }
